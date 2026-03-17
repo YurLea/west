@@ -73,6 +73,7 @@ class Trasher extends Dog {
     }
 }
 
+// Класс Гатлинга
 class Gatling extends Creature {
     constructor(name = 'Гатлинг', maxPower = 6, image = null) {
         super(name, maxPower, image);
@@ -84,21 +85,26 @@ class Gatling extends Creature {
 
         taskQueue.push(onDone => this.view.showAttack(onDone));
 
+        const cards = oppositePlayer.table.filter(card => card !== null);
+
+        if (cards.length === 0) {
+            taskQueue.continueWith(continuation);
+            return;
+        }
+
         let currentIndex = 0;
 
-        const attackNext = () => {
-            // Ищем следующую живую карту
-            while (currentIndex < oppositePlayer.table.length) {
-                const card = oppositePlayer.table[currentIndex];
+        const attackNext = (onDone) => {
+            if (currentIndex < cards.length) {
+                const card = cards[currentIndex];
                 currentIndex++;
 
-                if (card) {
-                    this.dealDamageToCreature(2, card, gameContext, attackNext);
-                    return;
-                }
+                this.dealDamageToCreature(2, card, gameContext, () => {
+                    attackNext(onDone);
+                });
+            } else {
+                onDone();
             }
-            // Все карты атакованы
-            onDone();
         };
 
         taskQueue.push(attackNext);
@@ -130,13 +136,11 @@ class Lad extends Dog {
     }
 
     doAfterComingIntoPlay(gameContext, continuation) {
-        // Увеличиваем счетчик братков
         Lad.setInGameCount(Lad.getInGameCount() + 1);
         super.doAfterComingIntoPlay(gameContext, continuation);
     }
 
     doBeforeRemoving(continuation) {
-        // Уменьшаем счетчик братков
         Lad.setInGameCount(Math.max(Lad.getInGameCount() - 1, 0));
         super.doBeforeRemoving(continuation);
     }
@@ -162,7 +166,6 @@ class Lad extends Dog {
         const bonus = Lad.getBonus();
         const count = Lad.getInGameCount();
 
-        // Проверяем наличие переопределенных методов
         if (Lad.prototype.hasOwnProperty('modifyDealedDamageToCreature') ||
             Lad.prototype.hasOwnProperty('modifyTakenDamage')) {
             return [
