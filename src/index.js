@@ -31,12 +31,13 @@ function getCreatureDescription(card) {
 class Creature extends Card {
     constructor(card) {
         super(card);
+        this.card = card;
     }
 
     getDescriptions(){
         let str1 = getCreatureDescription(card);
         let str2 = super.getDescriptions();
-        return [str2, ...str1];
+        return [str2, str1];
     }
 }
 
@@ -59,6 +60,7 @@ class Duck extends Creature {
 class Dog extends Creature {
     constructor(card) {
         super();
+        this.card = card;
     }
 }
 // Основа для утки.
