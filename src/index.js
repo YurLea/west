@@ -2,6 +2,7 @@ import Card from './Card.js';
 import Game from './Game.js';
 import TaskQueue from './TaskQueue.js';
 import SpeedRate from './SpeedRate.js';
+import card from "./Card.js";
 
 // Отвечает является ли карта уткой.
 function isDuck(card) {
@@ -27,7 +28,19 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
-class Duck extends Card {
+class Creature extends Card {
+    constructor(card) {
+        super(card);
+    }
+
+    getDescriptions(){
+        let str1 = getCreatureDescription(card);
+        let str2 = super.getDescriptions();
+        return [str2, ...str1];
+    }
+}
+
+class Duck extends Creature {
     constructor(card) {
         super(card);
         this.card = card;
@@ -43,7 +56,7 @@ class Duck extends Card {
 
 }
 
-class Dog extends Card {
+class Dog extends Creature {
     constructor(card) {
         super();
     }
